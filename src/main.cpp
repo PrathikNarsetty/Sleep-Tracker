@@ -14,14 +14,9 @@
 
 #include <Wire.h>
 #include "MAX30105.h"
-
 #include "heartRate.h"
 
 MAX30105 particleSensor;
-
-const byte RATE_SIZE = 8; //Increase this for more averaging. 4 is good.
-byte rates[RATE_SIZE]; //Array of heart rates
-byte rateSpot = 0;
 long lastBeat = 0; //Time at which the last beat occurred
 
 float beatsPerMinute;
@@ -70,30 +65,20 @@ void loop()
     long delta = millis() - lastBeat;
     lastBeat = millis();
 
-    beatsPerMinute = 60 / (delta / 1000.0);
+    beatsPerMinute = 60 / (delta / 1000.0);   // converts the delta ms into a BPS
 
-    if (beatsPerMinute < 255 && beatsPerMinute > 20)
+    if (beatsPerMinute < 185 && beatsPerMinute > 38)
     {
-      rates[rateSpot++] = (byte)beatsPerMinute; //Store this reading in the array
-      rateSpot %= RATE_SIZE; //Wrap variable
-
-      //Take average of readings
-      beatAvg = 0;
-      for (byte x = 0 ; x < RATE_SIZE ; x++)
-        beatAvg += rates[x];
-      beatAvg /= RATE_SIZE;
-    }
-  }
-
+      // its a valid heartrate so store it 
+      // store the beatsPerMinute into a ROM buffer capable of storing 15KB of data here ( each location can be 1 byte( truncate the decimals))
   Serial.print("IR=");
   Serial.print(irValue);
   Serial.print(", BPM=");
   Serial.print(beatsPerMinute);
-  Serial.print(", Avg BPM=");
-  Serial.print(beatAvg);
-
-  if (irValue < 50000)
-    Serial.print(" No finger?");
-
   Serial.println();
+
+    }
+    Serial.print("BAD");
+  }
+  // Serial.print("EVEN WORST");
 }
