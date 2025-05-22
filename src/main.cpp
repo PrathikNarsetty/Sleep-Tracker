@@ -113,11 +113,11 @@ void setup()
   timerAttachInterrupt(timer, &onTimer, true);
 
   // set alarm to fire every 3 s (3 000 000 µs), auto-reload = true
-  timerAlarmWrite(timer, 30000000, true);
+  timerAlarmWrite(timer, 3000000, true);
 
   // enable the alarm
   timerAlarmEnable(timer);
-
+  
 }
 
 void loop()
